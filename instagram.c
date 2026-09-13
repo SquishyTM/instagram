@@ -63,23 +63,109 @@ void imprime(TGrafo *vertice) {
 }
 
 int numero_seguidos(TGrafo *g, char *nome) {
-    //TODO: Implementar essa função
-    return 0;
+    int i = 0;
+    TGrafo *achou = busca_vertice(g, nome);
+    if (achou != NULL){
+        TVizinho *aux = achou->prim_vizinho;
+        while (aux != NULL){
+            i++;
+            aux = aux->prox;
+        }
+    }
+    return i;
 }
 
 int seguidores(TGrafo *g, char *nome, int imprime) {
-    //TODO: Implementar essa função
+    TGrafo *achou = g;
+    TVizinho *aux;
+    while (imprime == 1){
+        if (achou == NULL){
+            imprime = 0;
+        } else {
+            if (strcmp(achou->nome, nome) != 0){
+                aux = achou->prim_vizinho;
+                while (aux != NULL && imprime == 1)
+                    if (strcmp(aux->nome, nome) == 0){
+                        printf("%s ", achou->nome);
+                        imprime = 0;
+                    } else {
+                        aux = aux->prox;
+                    }
+            }
+        achou = achou->prox;
+        imprime = 1;
+        }
+    }
+    printf("\n");
     return 0;
 }
 
 TGrafo *mais_popular(TGrafo *g) {
-    //TODO: Implementar essa função
-    return NULL;
+    TGrafo *atual = g;
+    TGrafo *mais_pop = NULL;
+    int max_seguidores = -1;
+
+    while (atual != NULL) {
+        int cont_seguidores = 0;
+        TGrafo *temp = g;
+
+        while (temp != NULL) {
+            TVizinho *viz = temp->prim_vizinho;
+            while (viz != NULL) {
+                if (strcmp(viz->nome, atual->nome) == 0) {
+                    cont_seguidores++;
+                    break;
+                }
+                viz = viz->prox;
+            }
+            temp = temp->prox;
+        }
+
+        if (cont_seguidores > max_seguidores) {
+            max_seguidores = cont_seguidores;
+            mais_pop = atual;
+        }
+
+        atual = atual->prox;
+    }
+
+    return mais_pop;
 }
 
 int segue_mais_velho(TGrafo *g, int imprime) {
-    //TODO: Implementar essa função
-    return 0;
+    TGrafo *atual = g;
+    int contador = 0;
+
+    while (atual != NULL) {
+        TVizinho *viz = atual->prim_vizinho;
+        int so_mais_velho = 1;
+        int segue_alguem = 0;
+
+        while (viz != NULL) {
+            segue_alguem = 1;
+            TGrafo *v_destino = busca_vertice(g, viz->nome);
+
+            if (v_destino != NULL && v_destino->idade <= atual->idade) {
+                so_mais_velho = 0;
+                break;
+            }
+            viz = viz->prox;
+        }
+
+        if (segue_alguem == 1 && so_mais_velho == 1) {
+            contador++;
+            if (imprime == 1) {
+                printf("%s ", atual->nome);
+            }
+        }
+        atual = atual->prox;
+    }
+
+    if (imprime == 1) {
+        printf("\n");
+    }
+
+    return contador;
 }
 
 void libera_vizinho(TVizinho *vizinho) {
